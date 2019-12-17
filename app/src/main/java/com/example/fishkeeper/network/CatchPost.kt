@@ -11,6 +11,5 @@ data class CatchPost(
     @SerializedName("fish_weight") val fishWeight: Int,
     @SerializedName("lure_type") val lureType: String,
     @SerializedName("hook_size") val hookSize: Int,
-    val timestamp: Long,
-    val id: Long
+    val timestamp: Long
 )

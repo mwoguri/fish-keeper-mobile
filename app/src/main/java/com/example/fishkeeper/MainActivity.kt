@@ -41,8 +41,7 @@ class MainActivity : AppCompatActivity() {
             8,
             "Pheasant Tail",
             24,
-            1415617165516,
-            123
+            1415617165516
         )
         val postCatch = FishKeeperApi.retrofitService.saveCatch(catchToSave)
         postCatch.enqueue(object : Callback<CatchResponse> {

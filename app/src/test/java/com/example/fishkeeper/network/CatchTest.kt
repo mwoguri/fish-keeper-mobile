@@ -18,8 +18,7 @@ class CatchTest {
         8,
         "Pheasant Tail",
         24,
-        1415617165516,
-        123
+        1415617165516
     )
 
     private val expectedCatchResponse1 = CatchResponse(
@@ -52,7 +51,6 @@ class CatchTest {
     fun catchPostParses() {
 
         val jsonCatch = """{ 
-                "id": 123,
                 "latitude": 77.754500, 
                 "longitude": -101.413500, 
                 "altitude": 4800.00, 
