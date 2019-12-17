@@ -9,7 +9,20 @@ class CatchTest {
 
     private val gson = Gson()
 
-    private val expectedCatch1 = Catch(
+    private val expectedCatchPost = CatchPost(
+        77.754500,
+        -101.413500,
+        4800.00,
+        10.00,
+        "Brook trout",
+        8,
+        "Pheasant Tail",
+        24,
+        1415617165516,
+        123
+    )
+
+    private val expectedCatchResponse1 = CatchResponse(
         77.754500,
         -101.413500,
         4800.00,
@@ -22,7 +35,7 @@ class CatchTest {
         123
     )
 
-    private val expectedCatch2 = Catch(
+    private val expectedCatchResponse2 = CatchResponse(
         62.998000,
         -99.637600,
         9867.00,
@@ -36,7 +49,7 @@ class CatchTest {
     )
 
     @Test
-    fun catchParses() {
+    fun catchPostParses() {
 
         val jsonCatch = """{ 
                 "id": 123,
@@ -48,10 +61,10 @@ class CatchTest {
                 "fish_weight": 8,
                 "lure_type": "Pheasant Tail", 
                 "hook_size": 24, 
-                "timestamp": "1415617165516"
+                "timestamp": 1415617165516
                 }"""
-        val catch = gson.fromJson(jsonCatch, Catch::class.java)
-        assertEquals(expectedCatch1, catch)
+        val catch = gson.fromJson(jsonCatch, CatchPost::class.java)
+        assertEquals(expectedCatchPost, catch)
     }
 
 
@@ -86,12 +99,13 @@ class CatchTest {
               }
             ]
         """
-        val type = object : TypeToken<List<Catch>>() {}.type
+        val type = object : TypeToken<List<CatchResponse>>() {}.type
 
-        val catches: List<Catch> = gson.fromJson(jsonCatches, type)
-        val expectedCatch: List<Catch> = listOf(expectedCatch1, expectedCatch2)
+        val catchResponses: List<CatchResponse> = gson.fromJson(jsonCatches, type)
+        val expectedCatchResponses: List<CatchResponse> =
+            listOf(expectedCatchResponse1, expectedCatchResponse2)
 
-        assertEquals(expectedCatch, catches)
+        assertEquals(expectedCatchResponses, catchResponses)
 
     }
 }

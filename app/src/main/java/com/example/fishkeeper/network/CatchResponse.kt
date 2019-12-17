@@ -2,7 +2,7 @@ package com.example.fishkeeper.network
 
 import com.google.gson.annotations.SerializedName
 
-data class Catch(
+data class CatchResponse(
     val latitude: Double,
     val longitude: Double,
     val altitude: Double,
@@ -11,9 +11,6 @@ data class Catch(
     @SerializedName("fish_weight") val fishWeight: Int,
     @SerializedName("lure_type") val lureType: String,
     @SerializedName("hook_size") val hookSize: Int,
-    @SerializedName("timestamp") val timestampString: String,
-    val id: Long = 0
-) {
-    val timestamp: Long
-        get() = timestampString.toLong()
-}
+    val timestamp: String,
+    val id: Long
+)

@@ -4,7 +4,9 @@ import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 private const val BASE_URL = "http://temp.com"
 
@@ -21,7 +23,10 @@ private val retrofit = Retrofit.Builder()
 
 interface FishKeeperService {
     @GET("catch")
-    fun listCatches(): Call<List<Catch>>
+    fun listCatches(): Call<List<CatchResponse>>
+
+    @POST("catch")
+    fun saveCatch(@Body toSave: CatchPost): Call<CatchResponse>
 }
 
 object FishKeeperApi {
