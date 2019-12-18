@@ -6,32 +6,45 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.fishkeeper.network.CatchPost
 import com.example.fishkeeper.network.CatchResponse
 import com.example.fishkeeper.network.FishKeeperApi
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
+    private val compositeDisposable = CompositeDisposable()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val listCatches: Call<List<CatchResponse>> = FishKeeperApi.retrofitService.listCatches()
-        listCatches.enqueue(object : Callback<List<CatchResponse>> {
+        val listCatchesObservable: Observable<List<CatchResponse>> =
+            FishKeeperApi.retrofitService.listCatches()
 
-            override fun onResponse(
-                call: Call<List<CatchResponse>>,
-                response: Response<List<CatchResponse>>
-            ) {
-                Log.d(TAG, "listCatches onResponse ${response.body()}")
-            }
+        val listCatchesDisposable = listCatchesObservable
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(object : DisposableObserver<List<CatchResponse>>() {
+                override fun onComplete() {
+                    Log.d(TAG, "listCatches onComplete")
+                }
 
-            override fun onFailure(call: Call<List<CatchResponse>>, t: Throwable) {
-                Log.d(TAG, "listCatches onFailure ${t.localizedMessage}")
-            }
-        })
+                override fun onNext(t: List<CatchResponse>) {
+                    Log.d(TAG, "listCatches onNext $t")
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.d(TAG, "listCatches onError ${e.localizedMessage}")
+                }
+
+            })
+
+        compositeDisposable.add(listCatchesDisposable)
+
         val catchToSave = CatchPost(
             77.754500,
             -101.413500,
@@ -43,17 +56,30 @@ class MainActivity : AppCompatActivity() {
             24,
             1415617165516
         )
-        val postCatch = FishKeeperApi.retrofitService.saveCatch(catchToSave)
-        postCatch.enqueue(object : Callback<CatchResponse> {
+        val postCatchObservable = FishKeeperApi.retrofitService.saveCatch(catchToSave)
+        val catchPostDisposable = postCatchObservable
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeWith(object : DisposableObserver<CatchResponse>() {
+                override fun onComplete() {
+                    Log.d(TAG, "postCatch onComplete")
+                }
 
-            override fun onResponse(call: Call<CatchResponse>, response: Response<CatchResponse>) {
-                Log.d(TAG, "saveCatch onResponse ${response.body()}")
-            }
+                override fun onNext(t: CatchResponse) {
+                    Log.d(TAG, "postCatch onNext $t")
+                }
 
-            override fun onFailure(call: Call<CatchResponse>, t: Throwable) {
-                Log.d(TAG, "saveCatch onFailure ${t.localizedMessage}")
-            }
+                override fun onError(e: Throwable) {
+                    Log.d(TAG, "postCatch onError ${e.localizedMessage}")
+                }
 
-        })
+            })
+        compositeDisposable.add(catchPostDisposable)
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose()
     }
 }
