@@ -1,6 +1,5 @@
 package com.example.fishkeeper.feed
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -8,12 +7,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fishkeeper.databinding.ListItemCatchBinding
 import com.example.fishkeeper.network.CatchResponse
-private const val TAG = "CatchAdapter"
+
 class CatchAdapter : ListAdapter<CatchResponse, CatchAdapter.ViewHolder>(CatchDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Log.d(TAG, "onCreateViewHolder")
         return ViewHolder.from(parent)
-
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -21,21 +18,19 @@ class CatchAdapter : ListAdapter<CatchResponse, CatchAdapter.ViewHolder>(CatchDi
         holder.bind(catch)
     }
 
-    class CatchDiffCallback : DiffUtil.ItemCallback<CatchResponse>(){
+    class CatchDiffCallback : DiffUtil.ItemCallback<CatchResponse>() {
         override fun areItemsTheSame(oldItem: CatchResponse, newItem: CatchResponse): Boolean {
-            Log.d(TAG, "areItemsTheSame")
             return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: CatchResponse, newItem: CatchResponse): Boolean {
-            Log.d(TAG, "areContentsTheSame")
             return oldItem == newItem
         }
 
     }
 
-    class ViewHolder private constructor(val binding: ListItemCatchBinding)
-        : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder private constructor(val binding: ListItemCatchBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {

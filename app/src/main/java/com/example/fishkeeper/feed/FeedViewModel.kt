@@ -23,13 +23,11 @@ class FeedViewModel : ViewModel() {
 
 
     init {
-        Log.d(TAG, "init")
         getCatches()
     }
 
     override fun onCleared() {
         super.onCleared()
-        Log.d(TAG, "onCleared")
         compositeDisposable.dispose()
     }
 
