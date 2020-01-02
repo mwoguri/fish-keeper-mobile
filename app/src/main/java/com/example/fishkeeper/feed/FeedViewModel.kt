@@ -19,7 +19,11 @@ class FeedViewModel : ViewModel() {
 
     private val _catchesList = MutableLiveData<List<CatchResponse>>()
     val catchesList: LiveData<List<CatchResponse>>
-    get() = _catchesList
+        get() = _catchesList
+
+    private val _addCatchEvent = MutableLiveData<Boolean>()
+    val eventAddCatch: LiveData<Boolean>
+        get() = _addCatchEvent
 
 
     init {
@@ -31,7 +35,15 @@ class FeedViewModel : ViewModel() {
         compositeDisposable.dispose()
     }
 
-    private fun getCatches(){
+    fun eventAddCatch() {
+        _addCatchEvent.value = true
+    }
+
+    fun eventAddCatchHandled() {
+        _addCatchEvent.value = false
+    }
+
+    private fun getCatches() {
         val listCatchesObservable: Observable<List<CatchResponse>> =
             FishKeeperApi.retrofitService.listCatches()
 
