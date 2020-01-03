@@ -6,35 +6,111 @@
 
     <data>
 
+        <import type="com.example.fishkeeper.newcatch.BindingUtils" />
+
         <variable
-            name="viewmodel"
+            name="viewModel"
             type="com.example.fishkeeper.newcatch.NewCatchViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".feed.FeedActivity">
+        android:padding="8dp"
+        tools:context=".newcatch.NewCatchActivity">
 
-        <EditText
-            android:id="@+id/species"
-            android:inputType="text"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/speciesInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@={viewmodel.species}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:autofillHints="@string/species" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/species"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/species"
+                android:text="@={viewModel.species}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lureInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/speciesInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/lure"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/lure"
+                android:text="@={viewModel.lure}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/hookInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lureInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/hook_size"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/hook_size"
+                android:text="@={BindingUtils.intToString(viewModel.hookSize)}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lengthInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/hookInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/length"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/length"
+                android:inputType="numberDecimal"
+                android:text="@={BindingUtils.doubleToString(length, viewModel.length, viewModel.length)}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lengthInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/weight"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/weight"
+                android:inputType="numberDecimal"
+                android:text="@={BindingUtils.doubleToString(weight, viewModel.weight, viewModel.weight)}" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/submit_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.eventSubmit()}"
             android:text="@string/submit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:onClick="@{() -> viewmodel.eventSubmit()}"/>
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
