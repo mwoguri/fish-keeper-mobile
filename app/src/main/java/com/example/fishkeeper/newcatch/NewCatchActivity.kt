@@ -25,7 +25,7 @@ class NewCatchActivity : AppCompatActivity() {
 
         val viewModel = ViewModelProviders.of(this)
             .get(NewCatchViewModel::class.java)
-        binding.viewmodel = viewModel
+        binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
 

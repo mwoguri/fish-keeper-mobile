@@ -13,6 +13,10 @@ class NewCatchViewModel : ViewModel() {
         get() = _eventSubmit
 
     val species = MutableLiveData<String>()
+    val lure = MutableLiveData<String>()
+    val hookSize = MutableLiveData<Int>()
+    val length = MutableLiveData<Double>(2.3)
+    val weight = MutableLiveData<Double>()
 
     fun eventSubmit() {
         _eventSubmit.value = true
@@ -24,5 +28,6 @@ class NewCatchViewModel : ViewModel() {
 
     fun submitCatch() {
         Log.d(TAG, "species: ${species.value}")
+        Log.d(TAG, "hook: ${hookSize.value}")
     }
 }
