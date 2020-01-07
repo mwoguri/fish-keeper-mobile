@@ -8,7 +8,6 @@ import com.example.fishkeeper.R
 import com.example.fishkeeper.network.CatchPost
 import com.example.fishkeeper.network.CatchResponse
 import com.example.fishkeeper.network.FishKeeperApi
-import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -73,8 +72,6 @@ class NewCatchViewModel : ViewModel() {
     val postComplete: LiveData<Boolean?>
         get() = _postComplete
 
-
-
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
@@ -94,7 +91,6 @@ class NewCatchViewModel : ViewModel() {
         val isValid = validateData()
         if (isValid) {
             sendCatch()
-            // TODO post catch
         }
     }
 
@@ -119,9 +115,6 @@ class NewCatchViewModel : ViewModel() {
         )
         val listCatchesObservable: Observable<CatchResponse> =
             FishKeeperApi.retrofitService.saveCatch(newCatch)
-
-        val gson = Gson()
-        Log.d(TAG, gson.toJson(newCatch))
 
         val disposable = listCatchesObservable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -206,6 +199,4 @@ class NewCatchViewModel : ViewModel() {
     fun postCompleteHandled() {
         _postComplete.value = null
     }
-
-
 }
