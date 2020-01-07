@@ -15,7 +15,7 @@ import retrofit2.http.POST
 private const val BASE_URL = "http://fish-keeper.us-west-1.elasticbeanstalk.com"
 
 private val okHttpClient = OkHttpClient.Builder()
-    //.addInterceptor(FakeInterceptor())
+    .addInterceptor(FakeInterceptor())
     .build()
 
 private val retrofit = Retrofit.Builder()
