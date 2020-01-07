@@ -20,10 +20,8 @@ private const val TAG = "NewCatchActivity"
 
 class NewCatchActivity : AppCompatActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         val binding: ActivityNewCatchBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_new_catch)
