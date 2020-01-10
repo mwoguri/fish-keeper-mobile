@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Fish Keeper</string>
+    <string name="add_catch">Add New Catch</string>
+    <string name="submit">submit</string>
+    <string name="species">species</string>
+    <string name="length">length (inches)</string>
+    <string name="weight">weight (ounces)</string>
+    <string name="lure">lure/fly type</string>
+    <string name="hook_size">hook size</string>
+    <string name="required_field">required field</string>
+    <string name="invalid_value">invalid value</string>
+    <string name="catch_saved">Catch successfully saved.</string>
+    <string name="network_error">Network error.  Please try again later.</string>
 </resources>

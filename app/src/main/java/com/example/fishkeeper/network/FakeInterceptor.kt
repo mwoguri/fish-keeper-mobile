@@ -3,6 +3,8 @@ package com.example.fishkeeper.network
 import android.util.Log
 import okhttp3.*
 
+private const val TAG = "FakeInterceptor"
+
 class FakeInterceptor : Interceptor {
     private val getResponseString = """
              [
@@ -49,7 +51,7 @@ class FakeInterceptor : Interceptor {
         """
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        Log.d("Interceptor", "intercept!")
+        Log.d(TAG, "intercepted!")
 
         val json = when (chain.request().method()) {
             "GET" -> getResponseString
