@@ -64,10 +64,6 @@ class NewCatchViewModel : ViewModel() {
     val weightError: LiveData<Int?>
         get() = _weightError
 
-
-    //////////////////////////////////////////////////////////
-    // Weight: optional Float field (String for now...)
-    //////////////////////////////////////////////////////////
     private val _postComplete = MutableLiveData<Boolean?>()
     val postComplete: LiveData<Boolean?>
         get() = _postComplete
