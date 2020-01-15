@@ -1,11 +1,14 @@
 package com.example.fishkeeper.newcatch
 
+import android.animation.LayoutTransition
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -31,12 +34,22 @@ class NewCatchActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
+        (binding.constraintLayout as ViewGroup).layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+
         viewModel.eventSubmit.observe(this, Observer { clicked ->
             Log.d(TAG, "clicked: $clicked")
             if (clicked) {
                 viewModel.submitCatch()
                 viewModel.eventSubmitHandled()
+
+//                val params = binding.frameLayout.layoutParams as ConstraintLayout.LayoutParams
+////                params.topToTop = binding.root.id
+////                params.bottomToBottom = binding.root.id
+//                params.height = 1000
+//                binding.frameLayout.layoutParams = params
             }
+
+
         })
 
         viewModel.speciesError.observe(this, Observer { stringId ->

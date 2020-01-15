@@ -18,8 +18,10 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:padding="8dp"
             tools:context=".newcatch.NewCatchActivity">
 
@@ -108,6 +110,22 @@
                     android:text="@={viewModel.weight}" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:id="@+id/frame_layout"
+                app:layout_constraintTop_toBottomOf="@+id/weightInputLayout">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    tools:context=".feed.LocationActivity"
+                    tools:layout_editor_absoluteX="8dp" />
+            </FrameLayout>
+
             <Button
                 android:id="@+id/submit_button"
                 android:layout_width="match_parent"
@@ -116,7 +134,7 @@
                 android:text="@string/submit"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/weightInputLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/frame_layout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
