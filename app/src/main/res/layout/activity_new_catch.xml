@@ -6,6 +6,9 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+
         <import type="com.example.fishkeeper.newcatch.BindingUtils" />
 
         <variable
@@ -14,6 +17,7 @@
     </data>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -111,9 +115,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <FrameLayout
+                android:id="@+id/map_layout"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:id="@+id/frame_layout"
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_min="200dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/weightInputLayout">
 
                 <fragment
@@ -121,10 +128,20 @@
                     android:name="com.google.android.gms.maps.SupportMapFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-
                     tools:context=".feed.LocationActivity"
                     tools:layout_editor_absoluteX="8dp" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:contentDescription="@string/close_map"
+                    android:onClick="@{() -> viewModel.closeMap()}"
+                    android:src="@drawable/ic_close_24px"
+                    android:visibility="@{safeUnbox(viewModel.mapFullScreen) ? View.VISIBLE : View.GONE}" />
+
             </FrameLayout>
+
 
             <Button
                 android:id="@+id/submit_button"
@@ -134,7 +151,8 @@
                 android:text="@string/submit"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/frame_layout" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/map_layout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

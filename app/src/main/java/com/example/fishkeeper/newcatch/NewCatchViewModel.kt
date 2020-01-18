@@ -8,6 +8,8 @@ import com.example.fishkeeper.R
 import com.example.fishkeeper.network.CatchPost
 import com.example.fishkeeper.network.CatchResponse
 import com.example.fishkeeper.network.FishKeeperApi
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,7 +19,16 @@ import java.lang.Float.parseFloat
 
 private const val TAG = "NewCatchViewModel"
 
-class NewCatchViewModel : ViewModel() {
+class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
+    override fun onMapClick(clickLocation: LatLng?) {
+        Log.d(TAG, "onMapClick")
+        if (mapFullScreen.value == true) {
+            _latLng.value = clickLocation
+        } else {
+            _mapFullScreen.value = true
+        }
+    }
+
     private val compositeDisposable = CompositeDisposable()
 
     private val _eventSubmit = MutableLiveData<Boolean>()
@@ -64,6 +75,17 @@ class NewCatchViewModel : ViewModel() {
     val weightError: LiveData<Int?>
         get() = _weightError
 
+    //////////////////////////////////////////////////////////
+    // LatLong: optional field
+    //////////////////////////////////////////////////////////
+    private val _latLng = MutableLiveData<LatLng>()
+    val latLng: LiveData<LatLng>
+        get() = _latLng
+
+    private val _mapFullScreen = MutableLiveData<Boolean>(false)
+    val mapFullScreen: LiveData<Boolean>
+        get() = _mapFullScreen
+
     private val _postComplete = MutableLiveData<Boolean?>()
     val postComplete: LiveData<Boolean?>
         get() = _postComplete
@@ -79,6 +101,11 @@ class NewCatchViewModel : ViewModel() {
 
     fun eventSubmitHandled() {
         _eventSubmit.value = false
+    }
+
+    fun closeMap() {
+        Log.d(TAG, "closing map")
+        _mapFullScreen.value = false
     }
 
     fun submitCatch() {

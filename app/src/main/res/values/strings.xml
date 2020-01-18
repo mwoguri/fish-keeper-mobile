@@ -12,4 +12,5 @@
     <string name="catch_saved">Catch successfully saved.</string>
     <string name="network_error">Network error.  Please try again later.</string>
     <string name="title_activity_location">Map</string>
+    <string name="close_map">close map</string>
 </resources>
