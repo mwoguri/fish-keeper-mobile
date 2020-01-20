@@ -2,6 +2,7 @@ package com.example.fishkeeper.newcatch
 
 import android.animation.LayoutTransition
 import android.content.Context
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,6 +15,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.fishkeeper.R
 import com.example.fishkeeper.databinding.ActivityNewCatchBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -28,6 +31,7 @@ private const val TAG = "NewCatchActivity"
 class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
 
     lateinit var map: GoogleMap
+    lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val viewModel: NewCatchViewModel
         get() {
@@ -44,7 +48,7 @@ class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         val binding: ActivityNewCatchBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_new_catch)
 
@@ -106,13 +110,17 @@ class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
             updateErrorMessage(stringId, weightInputLayout)
         })
 
-        viewModel.latLng.observe(this, Observer { tappedLatLng ->
+        viewModel.latLng.observe(this, Observer { locationUpdate ->
             map?.let {
                 it.clear()
                 it.addMarker(
-                    MarkerOptions().position(tappedLatLng)
+                    MarkerOptions().position(locationUpdate.latLng)
                 )
-                it.animateCamera(CameraUpdateFactory.newLatLng(tappedLatLng))
+                if (locationUpdate.isUserInputted) {
+                    it.animateCamera(CameraUpdateFactory.newLatLng(locationUpdate.latLng))
+                } else {
+                    it.animateCamera(CameraUpdateFactory.newLatLngZoom(locationUpdate.latLng, 15f))
+                }
             }
         })
 
@@ -136,6 +144,18 @@ class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
                         .show()
                 }
                 viewModel.postCompleteHandled()
+            }
+        })
+
+        viewModel.eventUseDeviceLocation.observe(this, Observer { doLocationUpdate ->
+            if (doLocationUpdate) {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location: Location? ->
+                        location?.let {
+                            viewModel.updateLocation(location)
+                        }
+                    }
+                viewModel.locationUpdated()
             }
         })
     }

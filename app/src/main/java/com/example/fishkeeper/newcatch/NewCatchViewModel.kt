@@ -1,5 +1,6 @@
 package com.example.fishkeeper.newcatch
 
+import android.location.Location
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,11 +24,14 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
     override fun onMapClick(clickLocation: LatLng?) {
         Log.d(TAG, "onMapClick")
         if (mapFullScreen.value == true) {
-            _latLng.value = clickLocation
+            clickLocation?.let {
+                _latLng.value = LocationUpdate(clickLocation, true)
+            }
         } else {
             _mapFullScreen.value = true
         }
     }
+
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -35,8 +39,12 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
     val eventSubmit: LiveData<Boolean>
         get() = _eventSubmit
 
+    private val _eventUseDeviceLocation = MutableLiveData<Boolean>()
+    val eventUseDeviceLocation: LiveData<Boolean>
+        get() = _eventUseDeviceLocation
+
     //////////////////////////////////////////////////////////
-    // Species: required Stringfield
+    // Species: required String field
     //////////////////////////////////////////////////////////
     val species = MutableLiveData<String>()
     private val _speciesError = MutableLiveData<Int?>()
@@ -78,8 +86,8 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
     //////////////////////////////////////////////////////////
     // LatLong: optional field
     //////////////////////////////////////////////////////////
-    private val _latLng = MutableLiveData<LatLng>()
-    val latLng: LiveData<LatLng>
+    private val _latLng = MutableLiveData<LocationUpdate>()
+    val latLng: LiveData<LocationUpdate>
         get() = _latLng
 
     private val _mapFullScreen = MutableLiveData<Boolean>(false)
@@ -106,6 +114,11 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
     fun closeMap() {
         Log.d(TAG, "closing map")
         _mapFullScreen.value = false
+    }
+
+    fun useDeviceLocation() {
+        Log.d(TAG, "using location")
+        _eventUseDeviceLocation.value = true
     }
 
     fun submitCatch() {
@@ -221,5 +234,14 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
 
     fun postCompleteHandled() {
         _postComplete.value = null
+    }
+
+    fun updateLocation(location: Location) {
+        _latLng.value = LocationUpdate(LatLng(location.latitude, location.longitude), false)
+        //TODO save altitude
+    }
+
+    fun locationUpdated() {
+        _eventUseDeviceLocation.value = false
     }
 }
