@@ -25,7 +25,8 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
         Log.d(TAG, "onMapClick")
         if (mapFullScreen.value == true) {
             clickLocation?.let {
-                _latLng.value = LocationUpdate(clickLocation, true)
+                //TODO get altitude from lat/long
+                _latLng.value = LocationUpdate(clickLocation, null,true)
             }
         } else {
             _mapFullScreen.value = true
@@ -137,9 +138,9 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
         }
 
         val newCatch = CatchPost(
-            null, // TODO add lat
-            null, // TODO add long
-            null, // TODO add altitude
+            latLng.value?.latLng?.latitude,
+            latLng.value?.latLng?.longitude,
+            latLng.value?.altitude,
             length.value?.toDoubleOrNull(),
             species.value!!,
             weight.value?.toIntOrNull(),
@@ -237,8 +238,11 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
     }
 
     fun updateLocation(location: Location) {
-        _latLng.value = LocationUpdate(LatLng(location.latitude, location.longitude), false)
-        //TODO save altitude
+        _latLng.value = LocationUpdate(
+            LatLng(location.latitude, location.longitude),
+            location.altitude,
+            false
+        )
     }
 
     fun locationUpdated() {
