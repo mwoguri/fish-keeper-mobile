@@ -245,7 +245,7 @@ class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
         )
     }
 
-    fun locationUpdated() {
+    fun eventUseDeviceLocationHandled() {
         _eventUseDeviceLocation.value = false
     }
 }

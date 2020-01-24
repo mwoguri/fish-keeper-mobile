@@ -1,7 +1,9 @@
 package com.example.fishkeeper.newcatch
 
+import android.Manifest.permission
 import android.animation.LayoutTransition
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -10,12 +12,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.fishkeeper.R
 import com.example.fishkeeper.databinding.ActivityNewCatchBinding
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -27,11 +30,9 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_new_catch.*
 
 private const val TAG = "NewCatchActivity"
+private const val REQUEST_LOCATION_PERMISSION = 1
 
 class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
-
-    lateinit var map: GoogleMap
-    lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val viewModel: NewCatchViewModel
         get() {
@@ -40,15 +41,26 @@ class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
     override fun onMapReady(map: GoogleMap?) {
-        map?.let {
-            it.setOnMapClickListener(viewModel)
-            this.map = map
-        }
+        map?.setOnMapClickListener(viewModel)
+
+        viewModel.latLng.observe(this, Observer { locationUpdate ->
+            map?.let {
+                it.clear()
+                it.addMarker(
+                    MarkerOptions().position(locationUpdate.latLng)
+                )
+                if (locationUpdate.isUserInputted) {
+                    it.animateCamera(CameraUpdateFactory.newLatLng(locationUpdate.latLng))
+                } else {
+                    it.animateCamera(CameraUpdateFactory.newLatLngZoom(locationUpdate.latLng, 15f))
+                }
+            }
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         val binding: ActivityNewCatchBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_new_catch)
 
@@ -110,19 +122,6 @@ class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
             updateErrorMessage(stringId, weightInputLayout)
         })
 
-        viewModel.latLng.observe(this, Observer { locationUpdate ->
-            map?.let {
-                it.clear()
-                it.addMarker(
-                    MarkerOptions().position(locationUpdate.latLng)
-                )
-                if (locationUpdate.isUserInputted) {
-                    it.animateCamera(CameraUpdateFactory.newLatLng(locationUpdate.latLng))
-                } else {
-                    it.animateCamera(CameraUpdateFactory.newLatLngZoom(locationUpdate.latLng, 15f))
-                }
-            }
-        })
 
         viewModel.postComplete.observe(this, Observer { isComplete ->
             hideSoftKeyboard(binding.root)
@@ -147,17 +146,22 @@ class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
-        viewModel.eventUseDeviceLocation.observe(this, Observer { doLocationUpdate ->
-            if (doLocationUpdate) {
-                fusedLocationClient.lastLocation
-                    .addOnSuccessListener { location: Location? ->
-                        location?.let {
-                            viewModel.updateLocation(location)
-                        }
-                    }
-                viewModel.locationUpdated()
+        viewModel.eventUseDeviceLocation.observe(this, Observer { useDeviceLocation ->
+            if (useDeviceLocation) {
+                hideSoftKeyboard(binding.root)
+                useMyLocation()
+                viewModel.eventUseDeviceLocationHandled()
             }
         })
+    }
+
+    private fun findMyLocationOnMap() {
+        LocationServices.getFusedLocationProviderClient(this).lastLocation
+            .addOnSuccessListener { location: Location? ->
+                location?.let {
+                    viewModel.updateLocation(location)
+                }
+            }
     }
 
     private fun updateErrorMessage(stringId: Int?, textInputLayout: TextInputLayout) {
@@ -171,5 +175,36 @@ class NewCatchActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun hideSoftKeyboard(view: View) {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun useMyLocation() {
+        if (isPermissionGranted()) {
+            findMyLocationOnMap()
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
+    }
+
+    private fun isPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.isNotEmpty() && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                findMyLocationOnMap()
+            }
+        }
     }
 }
