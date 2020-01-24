@@ -6,6 +6,9 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+
         <import type="com.example.fishkeeper.newcatch.BindingUtils" />
 
         <variable
@@ -14,12 +17,15 @@
     </data>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:padding="8dp"
             tools:context=".newcatch.NewCatchActivity">
 
@@ -39,7 +45,6 @@
                     android:text="@={viewModel.species}" />
             </com.google.android.material.textfield.TextInputLayout>
 
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lureInputLayout"
                 android:layout_width="match_parent"
@@ -55,7 +60,6 @@
                     android:hint="@string/lure"
                     android:text="@={viewModel.lure}" />
             </com.google.android.material.textfield.TextInputLayout>
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/hookInputLayout"
@@ -108,6 +112,41 @@
                     android:text="@={viewModel.weight}" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <FrameLayout
+                android:id="@+id/map_layout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_min="200dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/weightInputLayout">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:layout_editor_absoluteX="8dp" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:contentDescription="@string/close_map"
+                    android:onClick="@{() -> viewModel.closeMap()}"
+                    android:src="@drawable/ic_close_24px"
+                    android:visibility="@{safeUnbox(viewModel.mapFullScreen) ? View.VISIBLE : View.GONE}" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:onClick="@{() -> viewModel.useDeviceLocation()}"
+                    android:contentDescription="@string/use_location"
+                    android:src="@drawable/ic_my_location_24px" />
+            </FrameLayout>
+
+
             <Button
                 android:id="@+id/submit_button"
                 android:layout_width="match_parent"
@@ -116,7 +155,8 @@
                 android:text="@string/submit"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/weightInputLayout" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/map_layout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

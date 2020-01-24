@@ -1,5 +1,6 @@
 package com.example.fishkeeper.newcatch
 
+import android.location.Location
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,6 +9,8 @@ import com.example.fishkeeper.R
 import com.example.fishkeeper.network.CatchPost
 import com.example.fishkeeper.network.CatchResponse
 import com.example.fishkeeper.network.FishKeeperApi
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,15 +20,32 @@ import java.lang.Float.parseFloat
 
 private const val TAG = "NewCatchViewModel"
 
-class NewCatchViewModel : ViewModel() {
+class NewCatchViewModel : ViewModel(), GoogleMap.OnMapClickListener {
+    override fun onMapClick(clickLocation: LatLng?) {
+        Log.d(TAG, "onMapClick")
+        if (mapFullScreen.value == true) {
+            clickLocation?.let {
+                //TODO get altitude from lat/long
+                _latLng.value = LocationUpdate(clickLocation, null,true)
+            }
+        } else {
+            _mapFullScreen.value = true
+        }
+    }
+
+
     private val compositeDisposable = CompositeDisposable()
 
     private val _eventSubmit = MutableLiveData<Boolean>()
     val eventSubmit: LiveData<Boolean>
         get() = _eventSubmit
 
+    private val _eventUseDeviceLocation = MutableLiveData<Boolean>()
+    val eventUseDeviceLocation: LiveData<Boolean>
+        get() = _eventUseDeviceLocation
+
     //////////////////////////////////////////////////////////
-    // Species: required Stringfield
+    // Species: required String field
     //////////////////////////////////////////////////////////
     val species = MutableLiveData<String>()
     private val _speciesError = MutableLiveData<Int?>()
@@ -64,10 +84,17 @@ class NewCatchViewModel : ViewModel() {
     val weightError: LiveData<Int?>
         get() = _weightError
 
+    //////////////////////////////////////////////////////////
+    // LatLong: optional field
+    //////////////////////////////////////////////////////////
+    private val _latLng = MutableLiveData<LocationUpdate>()
+    val latLng: LiveData<LocationUpdate>
+        get() = _latLng
 
-    //////////////////////////////////////////////////////////
-    // Weight: optional Float field (String for now...)
-    //////////////////////////////////////////////////////////
+    private val _mapFullScreen = MutableLiveData<Boolean>(false)
+    val mapFullScreen: LiveData<Boolean>
+        get() = _mapFullScreen
+
     private val _postComplete = MutableLiveData<Boolean?>()
     val postComplete: LiveData<Boolean?>
         get() = _postComplete
@@ -83,6 +110,16 @@ class NewCatchViewModel : ViewModel() {
 
     fun eventSubmitHandled() {
         _eventSubmit.value = false
+    }
+
+    fun closeMap() {
+        Log.d(TAG, "closing map")
+        _mapFullScreen.value = false
+    }
+
+    fun useDeviceLocation() {
+        Log.d(TAG, "using location")
+        _eventUseDeviceLocation.value = true
     }
 
     fun submitCatch() {
@@ -101,9 +138,9 @@ class NewCatchViewModel : ViewModel() {
         }
 
         val newCatch = CatchPost(
-            null, // TODO add lat
-            null, // TODO add long
-            null, // TODO add altitude
+            latLng.value?.latLng?.latitude,
+            latLng.value?.latLng?.longitude,
+            latLng.value?.altitude,
             length.value?.toDoubleOrNull(),
             species.value!!,
             weight.value?.toIntOrNull(),
@@ -198,5 +235,17 @@ class NewCatchViewModel : ViewModel() {
 
     fun postCompleteHandled() {
         _postComplete.value = null
+    }
+
+    fun updateLocation(location: Location) {
+        _latLng.value = LocationUpdate(
+            LatLng(location.latitude, location.longitude),
+            location.altitude,
+            false
+        )
+    }
+
+    fun eventUseDeviceLocationHandled() {
+        _eventUseDeviceLocation.value = false
     }
 }
